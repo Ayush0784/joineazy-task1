@@ -22,7 +22,7 @@ A full-stack role-based academic workflow platform enabling **Professors (Admins
 ## 2. System Architecture & Data Flow
 ```text
 ┌───────────────────────────┐       HTTPS / REST JSON        ┌──────────────────────────────────┐
-│   React + Tailwind CSS    │ ─────────────────────────────▶ │     Node.js + Express API        │
+│   React + Tailwind CSS    │ ─────────────────────────────▶ │      Node.js + Express API       │
 │    (Hosted on Vercel)     │ ◀───────────────────────────── │        (Hosted on Render)        │
 └───────────────────────────┘     JWT Bearer Authorization   └──────────────────────────────────┘
                                                                               │
@@ -32,3 +32,82 @@ A full-stack role-based academic workflow platform enabling **Professors (Admins
                                                              │    Neon Serverless PostgreSQL    │
                                                              │  (Auto-initialized schema.sql)   │
                                                              └──────────────────────────────────┘
+
+---
+
+## 3. Database Schema & Relationships (ER Diagram)
+```mermaid
+erDiagram
+    USERS ||--o{ GROUPS : creates
+    USERS ||--o{ GROUP_MEMBERS : joins
+    GROUPS ||--o{ GROUP_MEMBERS : contains
+    USERS ||--o{ ASSIGNMENTS : publishes
+    ASSIGNMENTS ||--o{ ASSIGNMENT_TARGETS : targets
+    GROUPS ||--o{ ASSIGNMENT_TARGETS : receives
+    ASSIGNMENTS ||--o{ SUBMISSIONS : tracks
+    GROUPS ||--o{ SUBMISSIONS : submits
+    USERS ||--o{ SUBMISSIONS : confirms
+
+    USERS {
+        int id PK
+        varchar name
+        varchar email UK
+        text password_hash
+        varchar role "STUDENT | ADMIN"
+        timestamp created_at
+    }
+    GROUPS {
+        int id PK
+        varchar name
+        int created_by FK
+    }
+    GROUP_MEMBERS {
+        int group_id PK, FK
+        int user_id PK, FK
+    }
+    ASSIGNMENTS {
+        int id PK
+        varchar title
+        text description
+        timestamp due_date
+        text onedrive_link
+        varchar target_type "ALL | SPECIFIC"
+        int created_by FK
+    }
+    ASSIGNMENT_TARGETS {
+        int assignment_id PK, FK
+        int group_id PK, FK
+    }
+    SUBMISSIONS {
+        int id PK
+        int assignment_id FK
+        int group_id FK
+        int confirmed_by FK
+        varchar status "SUBMITTED"
+        timestamp confirmed_at
+    }
+
+    ## 4. API Endpoint Details
+
+### Authentication
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register a new `STUDENT` or `ADMIN` user |
+| `POST` | `/api/auth/login` | Public | Authenticate user and return signed JWT + profile |
+
+### Groups (Student & Admin)
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/groups` | `STUDENT` | Create a new group and enroll creator as member |
+| `POST` | `/api/groups/:id/members` | `STUDENT` | Add a student to the group by email or numeric ID |
+| `GET` | `/api/groups/my` | `STUDENT` | Retrieve current student's group details and member list |
+| `GET` | `/api/groups` | `ADMIN` | List all registered student groups for assignment targeting |
+
+### Assignments & Submissions
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/assignments` | `ADMIN` | Publish an assignment (`ALL` or `SPECIFIC` group IDs) |
+| `PUT` | `/api/assignments/:id` | `ADMIN` | Update assignment title, description, due date, or OneDrive URL |
+| `GET` | `/api/assignments` | Authenticated | Fetch all assignments (Admin) or group-filtered assignments with status (Student) |
+| `POST` | `/api/assignments/:id/confirm` | `STUDENT` | Confirm two-step group submission for an assignment |
+| `GET` | `/api/analytics` | `ADMIN` | Fetch assignments, groups, and group-wise submission records |
