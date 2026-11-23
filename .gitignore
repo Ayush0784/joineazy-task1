@@ -1,0 +1,16 @@
+git init
+git add .gitignore backend/src/schema.sql
+git commit -m "chore: add gitignore and postgresql database schema"
+
+git add backend/
+git commit -m "feat(backend): implement JWT auth, role guards, group and assignment APIs"
+
+git add frontend/
+git commit -m "feat(frontend): build Student and Admin dashboards with two-step submission"
+
+git add docker-compose.yml README.md
+git commit -m "docs: add Docker Compose setup and architecture README"
+
+git branch -M main
+git remote add origin https://github.com/Ayush0784/joineazy-task1.git
+git push -u origin main
