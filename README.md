@@ -115,3 +115,18 @@ erDiagram
 | `GET` | `/api/assignments` | Authenticated | Fetch all assignments (Admin) or group-filtered assignments with status (Student) |
 | `POST` | `/api/assignments/:id/confirm` | `STUDENT` | Confirm two-step group submission for an assignment |
 | `GET` | `/api/analytics` | `ADMIN` | Fetch assignments, groups, and group-wise submission records |
+
+### 6. Key Design & Deployment Decisions
+Raw SQL over ORMs: Used the native pg driver with parameterized queries instead of a heavy ORM like Prisma or Sequelize. This kept the Express backend lightweight and allowed full control over the LEFT JOIN queries needed for the admin analytics dashboard.
+
+Database-Level Data Integrity: Enforced a UNIQUE(assignment_id, group_id) constraint directly in PostgreSQL. This guarantees that once one student confirms a submission, duplicate submissions from other group members are automatically rejected at the database level, preventing race conditions.
+
+Stateless Authentication: Implemented role-based access control (RBAC) using JWTs. Because the tokens are stateless, the Render backend doesn't need to manage server-side sessions, which is ideal for sleep-prone free hosting environments.
+
+Decoupled Cloud Architecture:
+
+Frontend (Vercel): Chosen for fast React deployments and CI/CD integration.
+
+Backend (Render): Hosts the Dockerized Express API.
+
+Database (Neon): Serverless PostgreSQL was selected for its built-in connection pooling, which prevents the Node API from exhausting database connections when the server wakes up from a cold start.
