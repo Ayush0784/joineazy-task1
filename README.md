@@ -33,6 +33,7 @@ A full-stack role-based academic workflow platform enabling **Professors (Admins
                                                              │  (Auto-initialized schema.sql)   │
                                                              └──────────────────────────────────┘
 
+```
 ---
 
 ## 3. Database Schema & Relationships (ER Diagram)
@@ -86,6 +87,9 @@ erDiagram
         varchar status "SUBMITTED"
         timestamp confirmed_at
     }
+    ```
+    ---
+    
 
     ## 4. API Endpoint Details
 
