@@ -2,9 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const pool = require('./config/db');
 const { authenticate, authorizeRole } = require('./middleware/auth');
 require('dotenv').config();
+
+// Auto-initialize Neon database tables on startup
+pool.query(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'))
+  .then(() => console.log('Database schema initialized'))
+  .catch((err) => console.error('Schema init error:', err.message));
 
 const app = express();
 app.use(cors());
