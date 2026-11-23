@@ -57,6 +57,7 @@ app.post('/api/auth/login', async (req, res) => {
 // ==================== GROUP ROUTES (STUDENT) ====================
 // Create a group and add creator as first member
 app.post('/api/groups', authenticate, authorizeRole('STUDENT'), async (req, res) => {
+  
   try {
     const { name } = req.body;
     const groupRes = await pool.query(
