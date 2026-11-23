@@ -86,8 +86,9 @@ erDiagram
         varchar status "SUBMITTED"
         timestamp confirmed_at
     }
-    ```
-    
+```
+---
+
     
 
     ## 4. API Endpoint Details
