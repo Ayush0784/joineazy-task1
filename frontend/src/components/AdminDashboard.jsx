@@ -110,7 +110,7 @@ export default function AdminDashboard() {
           <input
             type="datetime-local"
             required
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm "
+            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm scheme-dark"
             value={form.due_date}
             onChange={(e) => setForm({ ...form, due_date: e.target.value })}
           />
