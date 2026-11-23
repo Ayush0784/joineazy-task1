@@ -34,7 +34,6 @@ A full-stack role-based academic workflow platform enabling **Professors (Admins
                                                              └──────────────────────────────────┘
 
 ```
----
 
 ## 3. Database Schema & Relationships (ER Diagram)
 ```mermaid
@@ -88,7 +87,7 @@ erDiagram
         timestamp confirmed_at
     }
     ```
-    ---
+    
     
 
     ## 4. API Endpoint Details
